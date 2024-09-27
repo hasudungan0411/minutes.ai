@@ -32,12 +32,10 @@
       </li>
     </ul>
   </div>
-
   <!-- Main Content (You can replace this with your content) -->
   <div class="flex-1">
     </div>
 </div>
-
     <div class="bg-white rounded-lg shadow-md p-6 flex-1">
     <div class="bg-white rounded-lg shadow-md p-6">
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Upload Audio</button> 
