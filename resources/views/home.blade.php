@@ -3,59 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minutes AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Minutes.AI Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 </head>
+<body class="bg-gray-100">
 
-<body class="bg-gray-100 font-sans">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-xl font-bold text-gray-800 px-5">Minutes AI</div>
+    <!-- Sidebar -->
+    <div class="flex">
+        <div class="w-1/6 bg-purple-100 h-screen p-7">
+            <h1 class="text-xl font-bold mb-14">MINUTES.AI</h1>
+            <nav class="flex flex-col space-y-4">
+                <a href="#" class="p-2 bg-white rounded-lg text-center hover:bg-gray-400">Home</a>
+                <a href="#" class="p-2 bg-white rounded-lg text-center">How to Use</a>
+                <a href="#" class="p-2 bg-white rounded-lg text-center">Settings</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="w-4/5 p-9">
+            <!-- Search Bar and Logout Icon -->
+            <div class="flex justify-between items-center mb-6">
+                <input type="text" placeholder="Search..." class="p-2 border border-gray-300 rounded-lg w-3/4">
+                <button class="p-2 bg-gray-300 rounded-full">Login</button>
+            </div>
+
+            <!-- New Notes Section -->
             <div>
-                <a href="/login" class="text-gray-600 hover:text-blue-500 px-6">Login</a>
+                <h2 class="text-lg font-bold mb-2">NEW NOTES</h2>
+                <div class="flex space-x-4">
+                    <button id="openModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
+                        <span class="mr-2"></span> Pilih File Audio
+                    </button>
+                    <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4">
+                        <span class="mr-2">🔗</span> Tautkan Link
+                    </button>
+                    <button id="openRecordModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4">
+                        <span class="mr-2">🎤</span> Record Audio
+                    </button>
+                </div>
+            </div>
+
+            <!-- All My Notes Section -->
+            <div class="mt-9">
+                <h2 class="text-lg font-bold mb-2">ALL MY NOTES</h2>
+                <div class="space-y-4">
+                    <!-- Note Item -->
+                    @for ($i = 0; $i < 3; $i++)
+                    <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <span>👥</span>
+                            <div>
+                                <h3>Judul dari pertemuan</h3>
+                                <p>Hari, 00-Bulan-Tahun | 00 Menit</p>
+                            </div>
+                        </div>
+                        <button class="p-2">⋮</button>
+                    </div>
+                    @endfor
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <!-- Header Sidebar -->
-    <header class="bg-violet-400 text-white py-8 px-6 fixed top-0 left-0 h-full z-50 shadow-md flex flex-col items-center space-y-14 w-72 bg-cover bg-center">
-        <div class="text-xl font-bold text-gray-100">Minutes AI</div>
-        <nav class="flex flex-col space-y-8 text-white font-semibold">
-            <a href="#upload-section"
-                class="text-center hover:border hover:border-white hover:bg-red-500 hover:shadow-lg px-4 py-2 rounded transition duration-500">Home</a>
-            <a href="#how-to-use"
-                class="text-center hover:border hover:border-white hover:bg-red-500 hover:shadow-lg px-4 py-2 rounded transition duration-300">How to Use</a>
-        </nav>
-    </header>
+    <!-- Modal -->
+    <div id="fileModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-9 rounded-lg w-1/3">
+            <h2 class="text-lg font-bold mb-4">Upload File Audio</h2>
+            <form id="fileUploadForm" class="space-y-4">
+                <input type="file" name="audioFile" class="p-2 border border-gray-300 rounded-lg w-full" accept="audio/*">
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="closeModalButton" class="p-2 bg-gray-300 rounded-lg">Cancel</button>
+                    <button type="submit" class="p-2 bg-blue-500 text-white rounded-lg">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="ml-72 py-16 px-8">
-        <!-- Upload Audio and Link Form Side by Side -->
-        <div class="container mx-auto">
-            <div class="flex justify-center space-x-8">
-                <!-- Upload Audio File Form -->
-                <form action="/transcribe" method="POST" enctype="multipart/form-data" class="max-w-md bg-white p-8 rounded-lg shadow-lg w-1/2">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="audio-file" class="block text-gray-700 mb-2 text-center">Pilih file Audio</label>
-                        <input type="file" name="audio-file" id="audio-file" class="w-full p-3 border border-gray-300 rounded">
-                    </div>
-                    <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded font-semibold w-full">Mulai</button>
-                </form>
+    <div id="linkModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-9 rounded-lg w-1/3">
+            <h2 class="text-lg font-bold mb-4">Tautkan Link Audio</h2>
+            <form id="linkUploadForm" class="space-y-4">
+                <input type="url" name="audioLink" class="p-2 mb-2 border border-gray-300 rounded-lg w-full" placeholder="Masukkan URL audio..." required>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="closeLinkModalButton" class="p-2 bg-gray-300 rounded-lg">Cancel</button>
+                    <button type="submit" class="p-2 bg-blue-500 text-white rounded-lg">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                <!-- Input Link Form -->
-                <form action="/transcribe" method="POST" class="max-w-md bg-white p-8 rounded-lg shadow-lg w-1/2">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="audio-link" class="block text-gray-700 mb-2 text-center">Masukkan Link</label>
-                        <input type="url" name="audio-link" id="audio-link" class="w-full p-3 border border-gray-300 rounded" placeholder="https://example.com/audio.mp3">
-                    </div>
-                    <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded font-semibold w-full">Mulai</button>
-                </form>
+    <div id="recordModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg w-1/3">
+            <h2 class="text-lg font-bold mb-4">Record Audio</h2>
+            <div class="flex justify-center mb-4">
+                <button id="startRecordingButton" class="p-2 bg-green-500 text-white rounded-lg mr-4">Start Recording</button>
+                <button id="stopRecordingButton" class="p-2 bg-red-500 text-white rounded-lg" disabled>Stop Recording</button>
+            </div>
+            <audio id="audioPlayback" controls class="w-full mb-4 hidden"></audio>
+            <div class="flex justify-end space-x-4">
+                <button type="button" id="closeRecordModalButton" class="p-2 bg-gray-300 rounded-lg">Cancel</button>
+                <button id="saveRecordingButton" class="p-2 bg-blue-500 text-white rounded-lg" disabled>Save Recording</button>
             </div>
         </div>
-    </main>
+    </div>
 
+    <!-- Script untuk Modal -->
+    <script>
+        // Ambil elemen modal dan tombol
+        const modal = document.getElementById('fileModal');
+        const openModalButton = document.getElementById('openModalButton');
+        const closeModalButton = document.getElementById('closeModalButton');
+
+        // Fungsi untuk membuka modal
+        openModalButton.onclick = () => {
+            modal.classList.remove('hidden');
+        };
+
+        // Fungsi untuk menutup modal
+        closeModalButton.onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        // Mencegah submit default form dan menutup modal
+        document.getElementById('fileUploadForm').onsubmit = function(event) {
+            event.preventDefault();
+            modal.classList.add('hidden');
+            alert('File uploaded successfully!');
+        };
+
+        const linkModal = document.getElementById('linkModal');
+        const openLinkModalButton = document.getElementById('openLinkModalButton');
+        const closeLinkModalButton = document.getElementById('closeLinkModalButton');
+
+        openLinkModalButton.onclick = () => {
+            linkModal.classList.remove('hidden');
+        };
+
+        closeLinkModalButton.onclick = () => {
+            linkModal.classList.add('hidden');
+        };
+
+        document.getElementById('linkUploadForm').onsubmit = function(event) {
+            event.preventDefault();
+            linkModal.classList.add('hidden');
+            alert('Link submitted successfully!');
+        };
+
+
+        const recordModal = document.getElementById('recordModal');
+        const openRecordModalButton = document.getElementById('openRecordModalButton');
+        const closeRecordModalButton = document.getElementById('closeRecordModalButton');
+        const startRecordingButton = document.getElementById('startRecordingButton');
+        const stopRecordingButton = document.getElementById('stopRecordingButton');
+        const saveRecordingButton = document.getElementById('saveRecordingButton');
+        const audioPlayback = document.getElementById('audioPlayback');
+        
+        let mediaRecorder;
+        let audioChunks = [];
+
+        openRecordModalButton.onclick = () => {
+            recordModal.classList.remove('hidden');
+        };
+
+        closeRecordModalButton.onclick = () => {
+            recordModal.classList.add('hidden');
+            resetRecordingUI();
+        };
+
+        // Function to start recording
+        startRecordingButton.onclick = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayback.src = audioUrl;
+                audioPlayback.classList.remove('hidden');
+                saveRecordingButton.disabled = false;
+            };
+
+            mediaRecorder.start();
+            startRecordingButton.disabled = true;
+            stopRecordingButton.disabled = false;
+        };
+
+        // Function to stop recording
+        stopRecordingButton.onclick = () => {
+            mediaRecorder.stop();
+            startRecordingButton.disabled = false;
+            stopRecordingButton.disabled = true;
+        };
+
+        // Save the recording
+        saveRecordingButton.onclick = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const formData = new FormData();
+            formData.append('audioFile', audioBlob, 'recording.wav');
+
+            // Upload the file using Fetch API or similar
+            // fetch('/upload-audio', { method: 'POST', body: formData })
+
+            recordModal.classList.add('hidden');
+            resetRecordingUI();
+        };
+
+        function resetRecordingUI() {
+            audioChunks = [];
+            audioPlayback.src = '';
+            audioPlayback.classList.add('hidden');
+            saveRecordingButton.disabled = true;
+        }
+    </script>
+    
 </body>
 </html>
