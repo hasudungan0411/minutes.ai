@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\controllerhome;
+use App\Http\Controllers\BerandaadminController;
+use App\Http\Controllers\KelolamodelController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,5 +19,14 @@ use App\Http\Controllers\controllerhome;
 
 
 
-Route::get('/', [controllerhome::class, 'home']);
+Route::get('home', [controllerhome::class, 'home']);
+
+
+/* Halaman Admin*/
+Route::get('admin/beranda', [AdminController::class, 'beranda']);
+Route::get('admin/kelola', [AdminController::class, 'kelola']);
+Route::get('admin/detail', [AdminController::class, 'detail']);
+Route::get('admin/tambah', [AdminController::class, 'tambah']);
+
+
 
