@@ -23,8 +23,8 @@ Route::get('home', [controllerhome::class, 'home']);
 
 
 /* Halaman Admin*/
-Route::get('admin/beranda', [AdminController::class, 'beranda']);
-Route::get('admin/kelola', [AdminController::class, 'kelola']);
+Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
+Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
 Route::get('admin/detail', [AdminController::class, 'detail']);
 Route::get('admin/tambah', [AdminController::class, 'tambah']);
 
