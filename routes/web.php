@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\authcontroller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\controllerhome;
-use App\Http\Controllers\BerandaadminController;
-use App\Http\Controllers\KelolamodelController;
+use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\profilecontroller;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +19,22 @@ use App\Http\Controllers\AdminController;
 */
 
 
+Route::get('home', [controllerhome::class, 'home'])->name('home');
+Route::get('/', [halamancontroller::class, 'halaman']);
 
-Route::get('home', [controllerhome::class, 'home']);
+Route::get('/login', [authcontroller::class, 'login'])->name('auth.login');
+Route::post('/login', [authcontroller::class, 'loginpost'])->name('auth.login.post');
+Route::get('/auth/google', [authcontroller::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/notulain/auth/callback', [authcontroller::class, 'handleGoogleCallback']);
+Route::POST('/auth/logout', [authcontroller::class, 'logout'])->name('logout')->middleware('auth');
 
+Route::get('/register', [authcontroller::class, 'register'])->name('auth.register');
+Route::post('/register', [authcontroller::class, 'registerpost'])->name('auth.register.post');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [profilecontroller::class, 'edit'])->name('userprofile');
+    Route::put('/profile/update', [profilecontroller::class, 'update'])->name('profile.update');
+});
 
 /* Halaman Admin*/
 Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');

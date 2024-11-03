@@ -13,8 +13,8 @@
         <div class="w-1/6 bg-purple-100 h-screen p-7">
             <h1 class="text-xl font-bold italic mb-14 text-center">NOTULAIN</h1>
             <nav class="flex flex-col space-y-8">
-                <a href="#" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400 ">User</a>
-                <a href="#" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400">Model</a>
+                <a href="{{ route('admin.beranda') }}" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400 ">User</a>
+                <a href="{{ route('admin.kelola') }}" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400">Model</a>
             </nav>
         </div>
 
