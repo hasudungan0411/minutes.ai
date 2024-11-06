@@ -23,6 +23,9 @@ class authcontroller extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:5',
+        ], [
+            'email.required' => 'Email wajib di isi',
+            'password.required' => 'Password wajib diisi'
         ]);
 
         if ($validator->fails()) {
@@ -82,7 +85,23 @@ class authcontroller extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:5|confirmed',
+            'password' => [
+                'required',
+                'min:8',
+                'regex:/[a-z]/', // harus mengandung huruf kecil
+                'regex:/[A-Z]/', // harus mengandung huruf kapital
+                'regex:/[0-9]/', // harus mengandung angka
+                'confirmed'
+            ],
+        ], [
+            'name.required' => 'Nama wajib diisi',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
+            'password.required' => 'Kata sandi wajib diisi',
+            'password.min' => 'Kata sandi harus minimal 8 karakter',
+            'password.regex' => 'Kata sandi harus mengandung huruf kecil, huruf kapital, dan angka',
+            'password.confirmed' => 'Kata sandi tidak sama',
         ]);
 
         if ($validator->fails()) {
@@ -108,6 +127,6 @@ class authcontroller extends Controller
         $request->session()->regenerateToken();
 
         Alert::success('success', 'Anda Berhasil Logout');
-        return redirect('/login');
+        return redirect('/');
     }
 }

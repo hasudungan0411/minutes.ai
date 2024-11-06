@@ -13,21 +13,21 @@
 
 
     <!-- Header -->
-    <header class="bg-blue-600 text-white p-4 shadow-md">
+    <header class="bg-purple-300 text-white p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Nama Proyek -->
-            <h1 class="text-lg font-bold">NOTULAIN AI</h1>
+            <h1 class="text-lg font-bold">NOTULAIN</h1>
             <!-- Tombol Login dan Register -->
             <div>
                 <a href="{{ route('auth.login') }}" class="px-4 py-2 bg-white text-blue-600 rounded-lg mr-2">Login</a>
-                <a href="{{ route('auth.register') }}" class="px-4 py-2 bg-gray-200 text-blue-600 rounded-lg">Register</a>
+                <a href="{{ route('auth.register') }}" class="px-4 py-2 bg-white text-blue-600 rounded-lg">Register</a>
             </div>
         </div>
     </header>
 
     <!-- Konten Halaman -->
     <main class="flex flex-col items-center justify-center mt-16 text-center">
-        <h2 class="text-4xl font-bold mb-4">Selamat Datang di Notulain.AI</h2>
+        <h2 class="text-4xl font-bold mb-4">Selamat Datang di Notulain</h2>
         <p class="text-gray-600 mb-8">Temukan fitur dan layanan yang kami sediakan untuk memenuhi kebutuhan Anda dalam pengelolaan rapat yang lebih efektif.</p>
 
         <a href="{{ url('login') }}" class="px-6 py-3 bg-blue-500 text-white rounded-lg text-lg mb-4">Mulai Sekarang</a>
@@ -70,7 +70,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-blue-600 text-white p-4 mt-16">
+    <footer class="bg-purple-600 text-white p-4 mt-16">
         <div class="container mx-auto text-center">
             <h4 class="text-lg font-bold mb-2">Kontak Kami</h4>
             <p>Email: support@minutes.ai</p>
