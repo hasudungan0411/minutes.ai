@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    
     public function beranda()
     {
-        return view('admin/beranda');
+        // Mendapatkan semua data pengguna dari database
+        $users = DB::table('users')->select('name', 'email')->get();
+
+        // Menghitung total pengguna
+        $totalUsers = $users->count();
+
+        // Mengirimkan data ke view
+        return view('admin.beranda', compact('users', 'totalUsers'));
     }
 
     public function kelola()
