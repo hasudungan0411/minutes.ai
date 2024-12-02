@@ -11,7 +11,7 @@ class AdminController extends Controller
     public function beranda()
     {
         // Mendapatkan semua data pengguna dari database
-        $users = DB::table('users')->select('name', 'email')->get();
+        $users = DB::table('users')->select('name', 'email', 'fotoprofil')->get();
 
         // Menghitung total pengguna
         $totalUsers = $users->count();

@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\authcontroller;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\authcontroller;
 use App\Http\Controllers\controllerhome;
-use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\audiocontroller;
+use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\profilecontroller;
 
 /*
@@ -41,6 +42,9 @@ Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.be
 Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
 Route::get('admin/detail', [AdminController::class, 'detail']);
 Route::get('admin/tambah', [AdminController::class, 'tambah']);
+
+
+Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio'); 
 
 
 
