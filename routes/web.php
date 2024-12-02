@@ -39,9 +39,12 @@ Route::middleware(['auth'])->group(function () {
 
 /* Halaman Admin*/
 Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
+Route::post('/admin/tambah-user', [AdminController::class, 'tambahUser'])->name('admin.tambahUser');
+Route::post('/admin/user/store', [AdminController::class, 'store'])->name('admin.user.store');
+Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
 Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
 Route::get('admin/detail', [AdminController::class, 'detail']);
-Route::get('admin/tambah', [AdminController::class, 'tambah']);
+Route::get('admin/tambah', [AdminController::class,'tambah']);
 
 
 Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio'); 
