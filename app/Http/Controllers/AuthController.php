@@ -27,39 +27,50 @@ class authcontroller extends Controller
             'email.required' => 'Email wajib di isi',
             'password.required' => 'Password wajib diisi'
         ]);
-
+    
         if ($validator->fails()) {
             return redirect()->route('auth.login')
                 ->withErrors($validator)
                 ->withInput();
         }
-
+    
         // Attempt to login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            // Perbarui waktu terakhir login
+            $user = Auth::user();
+            $user->last_login = now(); // Gunakan Carbon untuk mendapatkan waktu saat ini
+            $user->save();
+    
             return redirect()->route('home')->with('success', 'Login berhasil');
         }
-
-        Alert::errors('Error', 'Email atau Passowrd anda tidak terdaftar');
+    
+        Alert::errors('Error', 'Email atau Password anda tidak terdaftar');
         return redirect('/login');
     }
+    
 
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
     }
-
+    
     public function handleGoogleCallback()
     {
         $user = Socialite::driver('google')->user();
         $existingUser = User::where('email', $user->getEmail())->first();
-
+    
         if ($existingUser) {
+            // Login user yang sudah ada
             Auth::login($existingUser);
-
+    
+            // Perbarui waktu terakhir login
+            $existingUser->last_login = now(); // Gunakan Carbon untuk waktu saat ini
+            $existingUser->save();
+    
             Alert::success('success', 'Anda Berhasil Login');
             return redirect()->route('home')->with('success', 'Login berhasil dengan Google');
         }
-
+    
         // Jika pengguna belum terdaftar, buat pengguna baru
         $newUser = User::create([
             'name' => $user->getName(),
@@ -68,12 +79,17 @@ class authcontroller extends Controller
             'fotoprofil' => $user->getAvatar() ?? 'default_avatar_url',
             'google_id' => $user->getId(), // Store Google ID if needed
         ]);
-
+    
         Auth::login($newUser);
-
+    
+        // Perbarui waktu terakhir login untuk user baru
+        $newUser->last_login = now();
+        $newUser->save();
+    
         Alert::success('success', 'Anda Berhasil Login');
         return redirect('home');
     }
+    
 
     public function register()
     {
