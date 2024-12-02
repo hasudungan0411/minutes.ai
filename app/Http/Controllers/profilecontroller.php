@@ -9,7 +9,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
-class ProfileController extends Controller // Perbaiki nama kelas
+class profilecontroller extends Controller // Perbaiki nama kelas
 {
     // Menampilkan halaman edit profil
     public function edit()

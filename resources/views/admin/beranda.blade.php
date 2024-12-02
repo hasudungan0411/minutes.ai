@@ -43,7 +43,8 @@
                     <!-- Loop melalui semua pengguna -->
                     @foreach($users as $user)
                         <div class="border rounded-lg p-6 flex flex-col items-center justify-center text-center space-y-4 hover:shadow-lg focus-within:ring-2 ring-blue-400 transition duration-300 ease-in-out h-auto w-full">
-                            <img class="w-16 h-16 rounded-full mr-4" src="https://via.placeholder.com/150" alt="User profile">
+                            <img src="{{ asset($user->fotoprofil) }}"
+                            class="w-16 h-16 rounded-full mr-4">
                             <div class="text-center">
                                 <p class="font-semibold">{{ $user->name }}</p>
                                 <p class="text-gray-500">{{ $user->email }}</p>
