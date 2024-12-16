@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use RealRashid\SweetAlert\Facades\Alert;
 
 
 class AdminController extends Controller
@@ -26,53 +28,52 @@ class AdminController extends Controller
     }
 
     public function tambahUser(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:6|confirmed',
-    ]);
+    {
+        // Validasi Input
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => [
+                'required',
+                'min:8',
+                'regex:/[a-z]/',  // Huruf kecil
+                'regex:/[A-Z]/',  // Huruf besar
+                'regex:/[0-9]/',  // Angka
+                'confirmed',      // Konfirmasi password
+            ],
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Kata sandi wajib diisi.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'password.regex' => 'Kata sandi harus mengandung huruf besar, huruf kecil, dan angka.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        ]);
+    
+        // Jika Validasi Gagal
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();  // Mengembalikan form dengan pesan error
+    }
+        
+        // Tambahkan User Baru
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password), // Enkripsi password
+        ]);
+    
+        // Redirect dengan Pesan Sukses
+        return redirect()->route('admin.beranda')->with('tambahUserSuccess', 'User berhasil ditambahkan.');
+    }    
 
-    // Simpan data user baru
-    DB::table('users')->insert([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    return redirect()->route('admin.beranda')->with('success', 'User berhasil ditambahkan.');
-}
-
-public function store(Request $request)
-{
-    // Validasi Input
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6',
-    ]);
-
-    // Simpan User Baru
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password), // Enkripsi password
-    ]);
-
-    // Redirect kembali ke halaman sebelumnya dengan pesan sukses
-    return redirect()->route('admin.beranda')->with('success', 'User berhasil ditambahkan.');
-}
-
-
-
-public function hapusUser($id)
+   public function hapusUser($id)
 {
     // Hapus user berdasarkan ID
     DB::table('users')->where('id', $id)->delete();
 
-    return redirect()->route('admin.beranda')->with('success', 'User berhasil dihapus.');
+    return redirect()->route('admin.beranda')->with('hapusUserSuccess', 'User berhasil dihapus.');
 }
 
     public function kelola()

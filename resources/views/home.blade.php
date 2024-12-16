@@ -94,5 +94,4 @@
     <script src="{{ asset('js/transciption.js') }}"></script>   
     <script src="{{ asset('js/recording.js') }}"></script>
     <script src="{{ asset('js/fileaudio.js') }}"></script>
-
 @endsection
