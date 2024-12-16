@@ -3,25 +3,25 @@
 @section('title', 'Home')
 
 @section('contents')
-    <div class="w-4/5 p-9">
+    <div class="w-full p-9 ">
         <!-- Search Bar and Logout Icon -->
         <div class="flex justify-between items-center mb-6">
-            <input type="text" placeholder="Search..." class="p-2 border border-gray-300 rounded-lg w-3/4">
+            <input type="text" placeholder="Search..." class="px-4 py-2 border border-gray-300 rounded-lg w-3/4">
         </div>
 
         <!-- New Notes Section -->
         <div>
             <h2 class="text-lg font-bold mb-2">NEW NOTES</h2>
-            <div class="flex space-x-4">
+            <div class="flex space-x-4 justify-center">
                 <button id="openModalButton"
                     class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2"></span> Pilih File Audio
                 </button>
-                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4">
+                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4  hover:bg-blue-200">
                     <span class="mr-2">🔗</span> Tautkan Link
                 </button>
                 <button id="openRecordModalButton"
-                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4">
+                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4  hover:bg-blue-200">
                     <span class="mr-2">🎤</span> Record Audio
                 </button>
             </div>
