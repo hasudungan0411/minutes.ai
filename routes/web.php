@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\audiocontroller;
 use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\profilecontroller;
+use App\Http\Controllers\DownloadSummaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +23,9 @@ use App\Http\Controllers\profilecontroller;
 
 Route::get('home', [controllerhome::class, 'home'])->name('home');
 Route::get('/', [halamancontroller::class, 'halaman']);
-Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan']);
-Route::get('detail', [controllerhome::class, 'detail'])->name('detail');
+Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan'])->name('cara.penggunaan');
+Route::get('detail/{id}', [controllerhome::class, 'detail'])->name('detail');
+Route::get('edit/{id}', [controllerhome::class, 'edit'])->name('edit');
 
 Route::get('/login', [authcontroller::class, 'login'])->name('auth.login');
 Route::post('/login', [authcontroller::class, 'loginpost'])->name('auth.login.post');
@@ -42,10 +44,16 @@ Route::middleware(['auth'])->group(function () {
 /* Halaman Admin*/
 Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
 Route::post('/admin/tambah-user', [AdminController::class, 'tambahUser'])->name('admin.tambahUser');
+Route::post('/admin/user/store', [AdminController::class, 'store'])->name('admin.user.store');
 Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
 Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
 Route::get('admin/detail', [AdminController::class, 'detail']);
 Route::get('admin/tambah', [AdminController::class, 'tambah']);
 
+Route::get('/transcripts/download/{id}', [DownloadSummaryController::class, 'download'])->name('transcripts.download');
+Route::put('/transcript/update/{id}', [controllerhome::class, 'update'])->name('transcript.update');
+
 
 Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio');
+
+Route::post('/process-audio', [controllerhome::class, 'processAudio'])->name('process.audio');

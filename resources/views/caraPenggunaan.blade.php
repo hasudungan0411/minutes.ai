@@ -1,6 +1,8 @@
-@extends('layout/main')
+@extends('layouts.user')
 
-@section('content')
+@section('title', 'Cara-Penggunaan')
+
+@section('contents')
 <div class="grid grid-cols-1">
     <div class="col-span-1">
         <h2 class="font-bold text-xl">Cara Penggunaan</h2>

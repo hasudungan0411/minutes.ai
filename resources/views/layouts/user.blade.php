@@ -7,10 +7,24 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body class="bg-gray-100">
     @include('sweetalert::alert')
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    title: "{{ session('success') }}",
+                    icon: 'success',
+                    // confirmButtonText: 'OK'
+                    confirmButtonColor: "#3085d6",
+                });
+            });
+        </script>
+        @endif
 
     <!-- Sidebar -->
     <div class="flex">
@@ -19,7 +33,7 @@
         <h1 class="text-xl font-bold mb-14 text-center">Notulain</h1>
         <nav class="flex flex-col space-y-4">
             <a href="{{ route('home') }}" class="p-2 bg-white rounded-lg text-center hover:bg-gray-400">Beranda</a>
-            <a href="#" class="p-2 bg-white rounded-lg text-center hover:bg-gray-400">Cara Penggunaan</a>
+            <a href="{{ route('cara.penggunaan') }}" class="p-2 bg-white rounded-lg text-center hover:bg-gray-400">Cara Penggunaan</a>
         </nav>
 
         <div class="mt-auto relative">

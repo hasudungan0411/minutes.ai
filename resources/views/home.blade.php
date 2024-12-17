@@ -11,17 +11,17 @@
 
         <!-- New Notes Section -->
         <div>
-            <h2 class="text-lg font-bold mb-2">NEW NOTES</h2>
+            <h2 class="text-lg font-bold mb-2">CATATAN BARU</h2>
             <div class="flex space-x-4 justify-center">
                 <button id="openModalButton"
                     class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2"></span> Pilih File Audio
                 </button>
-                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4  hover:bg-blue-200">
+                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2">🔗</span> Tautkan Link
                 </button>
                 <button id="openRecordModalButton"
-                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4  hover:bg-blue-200">
+                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2">🎤</span> Record Audio
                 </button>
             </div>
@@ -29,22 +29,27 @@
 
         <!-- All My Notes Section -->
         <div id="all-my-notes" class="mt-9">
-            <h2 class="text-lg font-bold mb-2">ALL MY NOTES</h2>
-            <div id="notes-container" class="space-y-4">
-                <!-- Note Item -->
-                @for ($i = 0; $i < 3; $i++)
-                    <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg">
-                        <div class="flex items-center space-x-4">
-                            <span>👥</span>
-                            <div>
-                                <h3>Judul dari pertemuan</h3>
-                                <p>Hari, 00-Bulan-Tahun | 00 Menit</p>
-                            </div> 
-                        </div>
-                        <button class="p-2">⋮</button>
+        <h2 class="text-lg font-bold mb-2">SEMUA CATATAN</h2>
+<div id="notes-container" class="space-y-4">
+    <!-- Note Item -->
+    @if($transcripts->isEmpty())
+        <p>Belum ada hasil transkripsi</p>
+    @else
+        @foreach($transcripts as $transcript)
+            <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <span>👥</span>
+                    <div>
+                        <strong>Nama File Audio:</strong> {{ $transcript->audio_name }} <br>
+                        <small>{{ $transcript->created_at->diffForHumans() }}</small> <br>
                     </div>
-                @endfor
+                </div>
+                <a href="{{ route('detail', ['id' => $transcript->id]) }}" class="p-2">⋮</a>
             </div>
+        @endforeach
+    @endif
+</div>
+
         </div>
     </div>
 
@@ -53,10 +58,17 @@
         <div class="bg-white p-9 rounded-lg w-9/ md:w-1/5 lg:w-1/3 relative">
             <button id="closeFileAudioModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
             <h3 class="text-lg font-bold mb-4">Pilih File Audio</h3>
-            <input type="file" id="audiofile" class="w-full p-2 border border-gray-300 rounded-lg" accept="audio/*">
-            <div class="flex justify-end mt-4">
-                <button id="processFileAudio" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Proses</button>
-            </div>
+            <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm" class="space-y-4">
+                @csrf
+                <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full" accept="audio/*">
+                @error('audio')
+                <small class="text-red-600">{{ $message }}</small>
+                @enderror
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="closeModalButton" class="p-2 bg-gray-300 rounded-lg">Cancel</button>
+                    <button type="submit" class="p-2 bg-blue-500 text-white rounded-lg">Upload</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -76,7 +88,7 @@
     <div id="recordModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center hidden">
         <div class="bg-white p-9 rounded-lg w-3/4 md:w-1/2 lg:w-1/3 relative">
             <button id="closeRecordModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
-            <h3 class="text-lg font-bold mb-9 text-center">Ngomonglahh</h3>
+            <h3 class="text-lg font-bold mb-9 text-center">Silahkan rekam suara anda</h3>
             <canvas id="frequencyCanvas" class="w-full h-24 mb-4"></canvas>
             <div class="flex justify-center mb-6 gap-5">
                 <button id="startRecordingButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Mulai Merekam</button>
@@ -91,7 +103,17 @@
         </div>
     </div>
 
+    
+@if(session('error'))
+    <div class="alert alert-danger mt-3">
+        {{ session('error') }}
+    </div>
+@endif
+
+
+
     <script src="{{ asset('js/transciption.js') }}"></script>   
     <script src="{{ asset('js/recording.js') }}"></script>
     <script src="{{ asset('js/fileaudio.js') }}"></script>
+
 @endsection
