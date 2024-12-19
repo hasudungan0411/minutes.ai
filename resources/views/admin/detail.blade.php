@@ -1,27 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Model</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <!-- Quill.js CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <!-- Quill.js JS -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-</head>
-<body class="bg-white-100">
+@extends('layouts.app')
 
-    <!-- Sidebar -->
-    <div class="flex">
-        <div class="w-1/6 bg-purple-100 h-screen p-7">
-            <h1 class="text-xl font-bold italic mb-14 text-center">NOTULAIN</h1>
-            <nav class="flex flex-col space-y-8">
-                <a href="#" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400 ">User</a>
-                <a href="#" class="bg-white p-4 mb-4 rounded-lg text-center font-bold text-xl hover:bg-gray-400">Model</a>
-            </nav>
-        </div>
+@section('title', 'Detail')
 
+@section('contents')
         <!-- Main Content -->
         <div class="w-4/5 p-9">
             <!-- Search Bar and Logout Icon -->
@@ -55,5 +36,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+@endsection

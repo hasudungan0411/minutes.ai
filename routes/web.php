@@ -19,11 +19,14 @@ use App\Http\Controllers\profilecontroller;
 |
 */
 
+Route::middleware(['auth', 'role:user'])->group(function(){
+    Route::get('home', [controllerhome::class, 'home'])->name('home');
+});
 
-Route::get('home', [controllerhome::class, 'home'])->name('home');
+
 Route::get('/', [halamancontroller::class, 'halaman']);
-Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan']);
-Route::get('detail', [controllerhome::class, 'detail'])->name('detail');
+Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan'])->name('cara.penggunaan');
+Route::get('detail/{id}', [controllerhome::class, 'detail'])->name('detail');
 
 Route::get('/login', [authcontroller::class, 'login'])->name('auth.login');
 Route::post('/login', [authcontroller::class, 'loginpost'])->name('auth.login.post');
@@ -40,13 +43,18 @@ Route::middleware(['auth'])->group(function () {
 });
 
 /* Halaman Admin*/
-Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
-Route::post('/admin/tambah-user', [AdminController::class, 'tambahUser'])->name('admin.tambahUser');
-Route::post('/admin/user/store', [AdminController::class, 'store'])->name('admin.user.store');
-Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
-Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
-Route::get('admin/detail', [AdminController::class, 'detail']);
-Route::get('admin/tambah', [AdminController::class, 'tambah']);
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
+    Route::post('/admin/tambah-user', [AdminController::class, 'tambahUser'])->name('admin.tambahUser');
+    Route::post('/admin/user/store', [AdminController::class, 'store'])->name('admin.user.store');
+    Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
+    Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
+    Route::get('admin/detail', [AdminController::class, 'detail']);
+    Route::get('admin/tambah', [AdminController::class, 'tambah']);
+});
+
 
 
 Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio');
+
+Route::post('/process-audio', [controllerhome::class, 'processAudio'])->name('process.audio');

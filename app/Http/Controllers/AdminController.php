@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 
@@ -23,6 +24,8 @@ class AdminController extends Controller
     
         // Kirim data ke view
         return view('admin.beranda', compact('users', 'totalUsers', 'loggedInUsers'));
+
+        
     }
 
     public function tambahUser(Request $request)
