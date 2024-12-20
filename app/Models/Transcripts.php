@@ -12,8 +12,9 @@ class Transcripts extends Model
     protected $fillable = [
         'user_id',
         'audio_name',
+        'audio_url',
         'speech_to_text',
         'diarization',
-        'summarization'
+        'summarization',
     ];
 }
