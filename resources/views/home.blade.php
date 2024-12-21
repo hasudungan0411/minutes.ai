@@ -13,16 +13,13 @@
         <div>
             <h2 class="text-lg font-bold mb-2">CATATAN BARU</h2>
             <div class="flex space-x-4 justify-center">
-                <button id="openModalButton"
-                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
+                <button id="openModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2"></span> Pilih File Audio
                 </button>
-                <button id="openLinkModalButton"
-                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
+                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2">🔗</span> Tautkan Link
                 </button>
-                <button id="openRecordModalButton"
-                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
+                <button id="openRecordModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2">🎤</span> Record Audio
                 </button>
             </div>
@@ -37,7 +34,7 @@
                     <p>Belum ada hasil transkripsi</p>
                 @else
                     @foreach ($transcripts as $transcript)
-                        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer hover:bg-blue-200"
+                        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer"
                             onclick="window.location='{{ route('detail', ['id' => $transcript->id]) }}'">
                             <div class="flex items-center space-x-4">
                                 <span>👥</span>
@@ -52,8 +49,6 @@
                 @endif
             </div>
         </div>
-
-    </div>
     </div>
 
     <!-- Modal for File Audio -->
@@ -61,11 +56,9 @@
         <div class="bg-white p-9 rounded-lg w-9/ md:w-1/5 lg:w-1/3 relative">
             <button id="closeFileAudioModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
             <h3 class="text-lg font-bold mb-4">Pilih File Audio</h3>
-            <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm"
-                class="space-y-4">
+            <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm" class="space-y-4">
                 @csrf
-                <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full"
-                    accept="audio/*">
+                <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full" accept="audio/*">
                 @error('audio')
                     <small class="text-red-600">{{ $message }}</small>
                 @enderror
@@ -97,8 +90,7 @@
             <canvas id="frequencyCanvas" class="w-full h-24 mb-4"></canvas>
             <div class="flex justify-center mb-6 gap-5">
                 <button id="startRecordingButton" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Mulai Merekam</button>
-                <button id="pauseRecordingButton"
-                    class="bg-yellow-500 text-white px-4 py-2  rounded-lg hidden">Jeda</button>
+                <button id="pauseRecordingButton" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hidden">Jeda</button>
                 <button id="stopRecordingButton" class="bg-red-500 text-white px-4 py-2 rounded-lg hidden">Berhenti</button>
             </div>
             <audio id="audioPlayback" controls class="w-full hidden mt-9"></audio>
@@ -108,14 +100,11 @@
         </div>
     </div>
 
-
     @if (session('error'))
         <div class="alert alert-danger mt-3">
             {{ session('error') }}
         </div>
     @endif
-
-
 
     <script src="{{ asset('js/transciption.js') }}"></script>
     <script src="{{ asset('js/recording.js') }}"></script>

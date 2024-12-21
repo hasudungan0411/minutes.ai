@@ -27,6 +27,8 @@ class AdminController extends Controller
 
         // Kirim data ke view
         return view('admin.beranda', compact('users', 'totalUsers', 'loggedInUsers'));
+
+        
     }
 
     public function tambahUser(Request $request)

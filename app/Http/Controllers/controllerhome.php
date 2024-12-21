@@ -23,7 +23,7 @@ class controllerhome extends Controller
                 $user = Auth::user();
                 $transcripts = Transcripts::where('user_id', $user->id)->get();
                 return view('home', compact('user', 'transcripts'));
-            } else if ($role === 'admin') {
+            } elseif ($role === 'admin') {
                 return view('admin.beranda');
             }
         }
@@ -33,27 +33,20 @@ class controllerhome extends Controller
 
     public function processAudio(Request $request)
     {
-        // Validasi file audio
         $request->validate([
             'audio' => 'required|file|mimetypes:audio/wav,audio/x-wav|max:10240', // Maksimum 10MB
         ]);
 
-        // Mengecek apakah file audio ada di request
         if (!$request->hasFile('audio') || !$request->file('audio')->isValid()) {
             return redirect()->back()->with('error', 'Tidak ada file audio yang diupload atau file tidak valid!');
         }
 
-        // Tingkatkan batas waktu eksekusi menjadi 300 detik
         set_time_limit(300);
 
         try {
-            // Ambil file audio
             $audio = $request->file('audio');
-
-            // Simpan file audio di storage
             $audioPath = $audio->store('audio', 'public');
 
-            // Kirim file audio ke Flask menggunakan Http::attach
             $response = Http::timeout(300)
                 ->attach(
                     'audio',
@@ -62,24 +55,20 @@ class controllerhome extends Controller
                 )
                 ->post('http://127.0.0.1:9999/process-audio');
 
-            // Debug jika ada masalah pada respons dari Flask
             if ($response->failed()) {
                 return redirect()->back()->with('error', 'Gagal menghubungi Flask API: ' . $response->body());
             }
 
-            // Periksa respons dari Flask
             if ($response->successful()) {
-                // Ambil data transkripsi dan diarization dari respons Flask
                 $generalTranscription = $response->json('general_transcription');
                 $diarizationResults = $response->json('diarization_results');
 
-                // Simpan hasil transkripsi ke database
                 Transcripts::create([
                     'audio_name' => $audio->getClientOriginalName(),
                     'audio_url' => $audioPath,
                     'speech_to_text' => $generalTranscription,
-                    'diarization' => json_encode($diarizationResults), // Simpan dalam format JSON
-                    'user_id' => auth()->id(), // Menyimpan ID pengguna yang sedang login
+                    'diarization' => json_encode($diarizationResults),
+                    'user_id' => auth()->id(),
                 ]);
 
                 return redirect()->back()->with('success', 'File berhasil ditranskripsi!');
@@ -99,33 +88,27 @@ class controllerhome extends Controller
     public function detail($id)
     {
         Carbon::setLocale('id');
-        // Ambil data berdasarkan ID
         $transcript = Transcripts::findOrFail($id);
-
         return view('detail', compact('transcript'));
     }
 
     public function edit($id)
     {
         Carbon::setLocale('id');
-        // Ambil data berdasarkan ID
         $transcript = Transcripts::findOrFail($id);
-
         return view('edit', compact('transcript'));
     }
 
     public function processRecordedAudio(Request $request)
     {
         $request->validate([
-            'audio' => 'required|mimes:wav,mp3|max:10240', // Validasi file audio
+            'audio' => 'required|mimes:wav,mp3|max:10240',
         ]);
 
-        // Generate nama file audio secara acak
         $audioName = 'audio_' . time() . '_' . Str::random(8) . '.' . $request->file('audio')->getClientOriginalExtension();
         $audioPath = $request->file('audio')->storeAs('uploads', $audioName, 'public');
 
-        // Kirim ke Flask API
-        $flaskApiUrl = 'http://127.0.0.1:5000/process_audio'; // Ganti dengan URL Flask API Anda
+        $flaskApiUrl = 'http://127.0.0.1:5000/process_audio';
         $response = Http::attach(
             'audio',
             fopen(storage_path('app/public/' . $audioPath), 'r'),
@@ -136,7 +119,6 @@ class controllerhome extends Controller
             return response()->json(['error' => 'Failed to process audio'], 500);
         }
 
-        // Simpan hasil ke database
         $transcriptData = $response->json();
         $transcript = Transcripts::create([
             'user_id' => auth()->id(),
