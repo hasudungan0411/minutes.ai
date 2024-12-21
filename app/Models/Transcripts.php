@@ -14,6 +14,7 @@ class Transcripts extends Model
         'audio_name',
         'speech_to_text',
         'diarization',
-        'summarization'
+        'summarization',
+        'audio_url',
     ];
 }

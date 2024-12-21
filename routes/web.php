@@ -9,19 +9,10 @@ use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\profilecontroller;
 use App\Http\Controllers\DownloadSummaryController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::middleware(['auth', 'role:user'])->group(function(){
+    Route::get('home', [controllerhome::class, 'home'])->name('home');
+});
 
-
-Route::get('home', [controllerhome::class, 'home'])->name('home');
 Route::get('/', [halamancontroller::class, 'halaman']);
 Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan'])->name('cara.penggunaan');
 Route::get('detail/{id}', [controllerhome::class, 'detail'])->name('detail');
@@ -41,19 +32,23 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/update', [profilecontroller::class, 'update'])->name('profile.update');
 });
 
-/* Halaman Admin*/
-Route::get('admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
-Route::post('/admin/tambah-user', [AdminController::class, 'tambahUser'])->name('admin.tambahUser');
-Route::post('/admin/user/store', [AdminController::class, 'store'])->name('admin.user.store');
-Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
-Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
-Route::get('admin/detail', [AdminController::class, 'detail']);
-Route::get('admin/tambah', [AdminController::class, 'tambah']);
+/* Halaman Admin */
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/beranda', [AdminController::class, 'beranda'])->name('admin.beranda');
+    Route::post('/admin/user/store', [AdminController::class, 'tambahUser'])->name('admin.user.store');
+    Route::delete('/admin/hapus-user/{id}', [AdminController::class, 'hapusUser'])->name('admin.hapusUser');
+    Route::get('admin/kelola', [AdminController::class, 'kelola'])->name('admin.kelola');
+    Route::get('admin/detail', [AdminController::class, 'detail']);
+    Route::get('admin/tambah', [AdminController::class, 'tambah']);
+    Route::get('/profile/admin', [AdminController::class, 'edit'])->name('adminprofile');
+    Route::put('/profile/update/admin', [AdminController::class, 'update'])->name('profile.update.admin');
+});
 
 Route::get('/transcripts/download/{id}', [DownloadSummaryController::class, 'download'])->name('transcripts.download');
 Route::put('/transcript/update/{id}', [controllerhome::class, 'update'])->name('transcript.update');
 
-
 Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio');
 
 Route::post('/process-audio', [controllerhome::class, 'processAudio'])->name('process.audio');
+
+Route::post('/process-recorded-audio', [controllerhome::class, 'processRecordedAudio']);

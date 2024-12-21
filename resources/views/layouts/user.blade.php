@@ -24,7 +24,7 @@
                 });
             });
         </script>
-        @endif
+    @endif
 
     <!-- Sidebar -->
     <div class="flex">

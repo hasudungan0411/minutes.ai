@@ -195,9 +195,67 @@ document
 // Process Audio Button
 document
     .getElementById("processRecordAudio")
-    .addEventListener("click", function () {
-        alert("Proses Audio...");
+    .addEventListener("click", async function () {
+        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        const audioName = generateRandomAudioName(); // Buat nama acak
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob, audioName); // Lampirkan file audio
+
+        try {
+            const response = await fetch("/process-recorded-audio", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to process audio");
+            }
+
+            const result = await response.json();
+            alert("Transkripsi berhasil diproses!");
+
+            // Tambahkan hasil baru ke list catatan
+            appendNewNote({
+                audio_name: result.transcript.audio_name,
+                detail_url: result.transcript.detail_url,
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Gagal memproses audio. Silakan coba lagi.");
+        }
     });
+
+// Fungsi untuk membuat nama acak
+function generateRandomAudioName() {
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 10);
+    return `audio_${timestamp}_${randomString}.wav`;
+}
+
+// Fungsi untuk menambahkan hasil ke list catatan
+function appendNewNote({ audio_name, detail_url }) {
+    const notesContainer = document.getElementById("notes-container");
+    const noteHTML = `
+        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer hover:bg-blue-200"
+            onclick="window.location='${detail_url}'">
+            <div class="flex items-center space-x-4">
+                <span>👥</span>
+                <div>
+                    <strong>Nama File Audio:</strong> ${audio_name} <br>
+                    <small>Baru saja</small> <br>
+                </div>
+            </div>
+            <a href="${detail_url}" class="p-2">⋮</a>
+        </div>
+    `;
+    notesContainer.insertAdjacentHTML("afterbegin", noteHTML);
+}
 
 // tutup modal dan reset rekaman
 function closeModal(modalId) {

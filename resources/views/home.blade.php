@@ -17,7 +17,8 @@
                     class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2"></span> Pilih File Audio
                 </button>
-                <button id="openLinkModalButton" class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
+                <button id="openLinkModalButton"
+                    class="flex items-center justify-center p-4 bg-gray-200 rounded-lg w-1/4 hover:bg-blue-200">
                     <span class="mr-2">🔗</span> Tautkan Link
                 </button>
                 <button id="openRecordModalButton"
@@ -29,28 +30,30 @@
 
         <!-- All My Notes Section -->
         <div id="all-my-notes" class="mt-9">
-        <h2 class="text-lg font-bold mb-2">SEMUA CATATAN</h2>
-<div id="notes-container" class="space-y-4">
-    <!-- Note Item -->
-    @if($transcripts->isEmpty())
-        <p>Belum ada hasil transkripsi</p>
-    @else
-        @foreach($transcripts as $transcript)
-            <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg">
-                <div class="flex items-center space-x-4">
-                    <span>👥</span>
-                    <div>
-                        <strong>Nama File Audio:</strong> {{ $transcript->audio_name }} <br>
-                        <small>{{ $transcript->created_at->diffForHumans() }}</small> <br>
-                    </div>
-                </div>
-                <a href="{{ route('detail', ['id' => $transcript->id]) }}" class="p-2">⋮</a>
+            <h2 class="text-lg font-bold mb-2">SEMUA CATATAN</h2>
+            <div id="notes-container" class="space-y-4">
+                <!-- Note Item -->
+                @if ($transcripts->isEmpty())
+                    <p>Belum ada hasil transkripsi</p>
+                @else
+                    @foreach ($transcripts as $transcript)
+                        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer hover:bg-blue-200"
+                            onclick="window.location='{{ route('detail', ['id' => $transcript->id]) }}'">
+                            <div class="flex items-center space-x-4">
+                                <span>👥</span>
+                                <div>
+                                    <strong>Nama File Audio:</strong> {{ $transcript->audio_name }} <br>
+                                    <small>{{ $transcript->created_at->diffForHumans() }}</small> <br>
+                                </div>
+                            </div>
+                            <a href="{{ route('detail', ['id' => $transcript->id]) }}" class="p-2">⋮</a>
+                        </div>
+                    @endforeach
+                @endif
             </div>
-        @endforeach
-    @endif
-</div>
-
         </div>
+
+    </div>
     </div>
 
     <!-- Modal for File Audio -->
@@ -58,11 +61,13 @@
         <div class="bg-white p-9 rounded-lg w-9/ md:w-1/5 lg:w-1/3 relative">
             <button id="closeFileAudioModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
             <h3 class="text-lg font-bold mb-4">Pilih File Audio</h3>
-            <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm" class="space-y-4">
+            <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm"
+                class="space-y-4">
                 @csrf
-                <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full" accept="audio/*">
+                <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full"
+                    accept="audio/*">
                 @error('audio')
-                <small class="text-red-600">{{ $message }}</small>
+                    <small class="text-red-600">{{ $message }}</small>
                 @enderror
                 <div class="flex justify-end space-x-4">
                     <button type="button" id="closeModalButton" class="p-2 bg-gray-300 rounded-lg">Cancel</button>
@@ -103,16 +108,16 @@
         </div>
     </div>
 
-    
-@if(session('error'))
-    <div class="alert alert-danger mt-3">
-        {{ session('error') }}
-    </div>
-@endif
+
+    @if (session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
+    @endif
 
 
 
-    <script src="{{ asset('js/transciption.js') }}"></script>   
+    <script src="{{ asset('js/transciption.js') }}"></script>
     <script src="{{ asset('js/recording.js') }}"></script>
     <script src="{{ asset('js/fileaudio.js') }}"></script>
 
