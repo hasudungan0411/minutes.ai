@@ -44,13 +44,26 @@
         <div class="col-span-2 mt-2">
             <div class="pl-5">
                 <!-- Form untuk mengedit summarization -->
-                <form action="" method="POST">
-                    @csrf
-                    <textarea name="summarization" class="w-full h-32 p-2 border rounded">{{ $transcript->summarization }}</textarea>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4">
-                        Ubah
-                    </button>
-                </form>
+                <form action="{{ route('transcript.update', $transcript->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            @php
+                $summarizationText = '';
+                if ($transcript->summarization && json_decode($transcript->summarization, true)) {
+                    foreach (json_decode($transcript->summarization, true) as $diary) {
+                        $summarizationText .= $diary['prediction'] . "\n";
+                        $summarizationText .= $diary['summary'] . "\n\n";
+                    }
+                }
+            @endphp
+
+            <textarea name="summarization" class="w-full h-32 p-2 border rounded">{{ trim($summarizationText) }}</textarea>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4">
+                Ubah
+            </button>
+        </form>
             </div>
         </div>
     </div>

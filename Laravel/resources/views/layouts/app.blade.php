@@ -14,6 +14,56 @@
 <body class="bg-gray-100">
     @include('sweetalert::alert')
 
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    title: "{{ session('success') }}",
+                    icon: 'success',
+                    // confirmButtonText: 'OK'
+                    confirmButtonColor: "#3085d6",
+                });
+            });
+        </script>
+        @endif
+
+@if ($errors->has('name'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error',
+                text: "{{ $errors->first('name') }}",
+                icon: 'error',
+                confirmButtonColor: "#3085d6",
+            });
+        });
+    </script>
+@endif
+@if ($errors->has('email'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error',
+                text: "{{ $errors->first('email') }}",
+                icon: 'error',
+                confirmButtonColor: "#3085d6",
+            });
+        });
+    </script>
+@endif
+@if ($errors->has('password'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error',
+                text: "{{ $errors->first('password') }}",
+                icon: 'error',
+                confirmButtonColor: "#3085d6",
+            });
+        });
+    </script>
+@endif
+
     <div class="flex">
         <div class="w-72 bg-purple-100 h-screen p-7 flex flex-col">
             <h1 class="text-xl font-bold italic mb-14 text-center">NOTULAIN</h1>
@@ -37,7 +87,6 @@
                 </div>
                 <div id="dropdown" class="absolute left-0 bottom-full mb-2 w-48 bg-white border rounded shadow-lg hidden">
                     <a href="{{ url('profile/admin') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
-                    <a href="{{ url('profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profil</a>
                     <form action="{{ url('auth/logout') }}" method="POST" class="block">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">Logout</button>

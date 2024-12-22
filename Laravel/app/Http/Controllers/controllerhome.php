@@ -33,42 +33,54 @@ class controllerhome extends Controller
 
     public function processAudio(Request $request)
     {
+        // Validasi file audio
         $request->validate([
-            'audio' => 'required|file|mimetypes:audio/wav,audio/x-wav|max:10240', // Maksimum 10MB
+            'audio' => 'required|file|mimes:wav|max:10240', // Maksimum 10MB
+        ], [
+            'audio.required' => 'Harus ada file audio yang di upload',
+            'audio.file' => 'File audio harus berupa file',
+            'audio.mimes' => 'File audio harus memiliki tipe WAV',
+            'audio.max' => 'File audio tidak boleh lebih dari 10 MB'
         ]);
 
+        // Mengecek apakah file audio ada di request
         if (!$request->hasFile('audio') || !$request->file('audio')->isValid()) {
             return redirect()->back()->with('error', 'Tidak ada file audio yang diupload atau file tidak valid!');
         }
 
+        // Tingkatkan batas waktu eksekusi menjadi 300 detik
         set_time_limit(300);
 
         try {
+            // Ambil file audio
             $audio = $request->file('audio');
-            $audioPath = $audio->store('audio', 'public');
 
-            $response = Http::timeout(300)
-                ->attach(
-                    'audio',
-                    fopen($audio->getRealPath(), 'r'),
-                    $audio->getClientOriginalName()
-                )
-                ->post('http://127.0.0.1:9999/process-audio');
+            // Kirim file audio ke Flask menggunakan Http::attach
+            $response = Http::timeout(300) 
+             ->attach(
+              'audio',
+              fopen($audio->getRealPath(), 'r'),
+              $audio->getClientOriginalName()
+             )
+             ->post('http://127.0.0.1:9999/process-audio');
 
+            // Debug jika ada masalah pada respons dari Flask
             if ($response->failed()) {
                 return redirect()->back()->with('error', 'Gagal menghubungi Flask API: ' . $response->body());
             }
 
+            // Periksa respons dari Flask
             if ($response->successful()) {
+                // Ambil data transkripsi dan diarization dari respons Flask
                 $generalTranscription = $response->json('general_transcription');
                 $diarizationResults = $response->json('diarization_results');
 
+                // Simpan hasil transkripsi ke database
                 Transcripts::create([
                     'audio_name' => $audio->getClientOriginalName(),
-                    'audio_url' => $audioPath,
                     'speech_to_text' => $generalTranscription,
-                    'diarization' => json_encode($diarizationResults),
-                    'user_id' => auth()->id(),
+                    'diarization' => json_encode($diarizationResults), // Simpan dalam format JSON
+                    'user_id' => auth()->id(), // Menyimpan ID pengguna yang sedang login
                 ]);
 
                 return redirect()->back()->with('success', 'File berhasil ditranskripsi!');
@@ -98,6 +110,83 @@ class controllerhome extends Controller
         $transcript = Transcripts::findOrFail($id);
         return view('edit', compact('transcript'));
     }
+
+    public function update(Request $request, $id)
+{
+    $transcript = Transcripts::findOrFail($id);
+
+    // Ambil input dari textarea
+    $input = $request->input('summarization');
+
+    // Pisahkan data menjadi array per baris
+    $lines = array_filter(explode("\n", $input), 'trim'); // Hapus baris kosong
+
+    // Parsing data
+    $summarization = [];
+    for ($i = 0; $i < count($lines); $i += 2) {
+        if (isset($lines[$i]) && isset($lines[$i + 1])) {
+            $summarization[] = [
+                'prediction' => trim($lines[$i]),       // Baris prediksi
+                'summary' => trim($lines[$i + 1])      // Baris hasil ringkasan
+            ];
+        }
+    }
+
+    // Konversi ke JSON
+    $summarizationJson = json_encode($summarization);
+
+    // Simpan ke database
+    $transcript->summarization = $summarizationJson;
+    $transcript->save();
+
+    // Redirect dengan pesan sukses
+    return redirect()->route('detail', $id)->with('success', 'Ringkasan berhasil diperbarui.');
+}
+
+    
+
+public function summarize(Request $request, $id)
+{
+    // Ambil data transcript berdasarkan ID
+    $transcript = Transcripts::findOrFail($id);
+    $diarizationData = json_decode($transcript->diarization, true); // Ambil diarization dari database dan decode
+
+    if (!$diarizationData) {
+        return redirect()->back()->with('error', 'Tidak ada data diarization untuk transcript ini!');
+    }
+
+    // Kirim data diarization ke Flask
+    try {
+        $response = Http::timeout(300) // Set timeout agar tidak terlalu cepat gagal
+            ->post('http://127.0.0.1:9999/process-text', $diarizationData);
+
+        // Cek apakah Flask berhasil merespons
+        if ($response->successful()) {
+            // Ambil data hasil dari Flask
+            $responseData = $response->json();
+            
+            // Cek apakah 'results' ada dalam response
+            if (isset($responseData['results'])) {
+                // Simpan hasil summary sebagai JSON dalam kolom 'summarization'
+                $transcript->summarization = json_encode($responseData['results']);
+                
+                // Simpan perubahan di database
+                $transcript->save();
+        
+                // Redirect kembali dengan pesan sukses
+                return redirect()->back()->with('success', 'Ringkasan berhasil dibuat!')->with('summary', $responseData['results']);
+            } else {
+                // Jika tidak ada 'results' dalam respons Flask, kirimkan pesan error
+                return redirect()->back()->with('error', 'Flask tidak mengembalikan data yang valid.');
+            }
+        } else {
+            // Jika respons dari Flask tidak berhasil, kirimkan pesan error
+            return redirect()->back()->with('error', 'Terjadi kesalahan dalam permintaan ke Flask.');
+        }
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Terjadi kesalahan saat menghubungi Flask: ' . $e->getMessage());
+    }
+}
 
     public function processRecordedAudio(Request $request)
     {

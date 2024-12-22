@@ -22,10 +22,19 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:5',
+            'password' => [
+                'required',
+                'min:8',
+                'regex:/[a-z]/', // harus mengandung huruf kecil
+                'regex:/[A-Z]/', // harus mengandung huruf kapital
+                'regex:/[0-9]/', // harus mengandung angka
+            ],
         ], [
             'email.required' => 'Email wajib di isi',
-            'password.required' => 'Password wajib diisi'
+            'email.email' => 'Email harus berupa email yang valid',
+            'password.required' => 'Kata sandi wajib diisi',
+            'password.min' => 'Kata sandi harus minimal 8 karakter',
+            'password.regex' => 'Kata sandi harus mengandung huruf kecil, huruf kapital, dan angka',
         ]);
 
         if ($validator->fails()) {
@@ -49,8 +58,7 @@ class AuthController extends Controller
             }
         }
 
-        Alert::errors('Error', 'Email atau Password anda tidak terdaftar');
-        return redirect('/login');
+        return redirect('/login')->with('error', 'Email atau Password anda tidak terdaftar');
     }
 
 

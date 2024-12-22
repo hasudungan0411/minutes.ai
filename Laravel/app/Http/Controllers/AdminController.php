@@ -15,21 +15,25 @@ class AdminController extends Controller
 {
 
     public function beranda()
-    {
-        // Mengambil semua pengguna
-        $users = User::select('id', 'name', 'email', 'last_login')->get();
+{
+    // Mengambil semua pengguna dengan role 'user' dan membatasi 10 per halaman
+    $users = User::select('id', 'name', 'email', 'last_login')
+                 ->where('role', 'user')
+                 ->paginate(10); // Tambahkan pagination
 
-        // Menghitung total pengguna
-        $totalUsers = $users->count();
+    // Menghitung total pengguna dengan role 'user'
+    $totalUsers = User::where('role', 'user')->count();
 
-        // Menghitung jumlah pengguna yang pernah login
-        $loggedInUsers = $users->whereNotNull('last_login')->count();
+    // Menghitung jumlah pengguna dengan role 'user' yang pernah login
+    $loggedInUsers = User::where('role', 'user')
+                         ->whereNotNull('last_login')
+                         ->count();
 
-        // Kirim data ke view
-        return view('admin.beranda', compact('users', 'totalUsers', 'loggedInUsers'));
+    // Kirim data ke view
+    return view('admin.beranda', compact('users', 'totalUsers', 'loggedInUsers'));
+}
 
-        
-    }
+
 
     public function tambahUser(Request $request)
     {
@@ -42,7 +46,6 @@ class AdminController extends Controller
                 'regex:/[a-z]/', // harus mengandung huruf kecil
                 'regex:/[A-Z]/', // harus mengandung huruf kapital
                 'regex:/[0-9]/', // harus mengandung angka
-                'confirmed'
             ],
         ], [
             'name.required' => 'Nama wajib diisi',
@@ -52,7 +55,6 @@ class AdminController extends Controller
             'password.required' => 'Kata sandi wajib diisi',
             'password.min' => 'Kata sandi harus minimal 8 karakter',
             'password.regex' => 'Kata sandi harus mengandung huruf kecil, huruf kapital, dan angka',
-            'password.confirmed' => 'Kata sandi tidak sama',
         ]);
 
         if ($validator->fails()) {

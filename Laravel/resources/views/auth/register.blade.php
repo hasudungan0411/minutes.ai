@@ -47,17 +47,6 @@
             <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">Submit</button>
         </form>
 
-        <!-- Menampilkan error atau pesan sukses -->
-        <!-- @if ($errors->any())
-        <div class="mt-4 text-red-600">
-            <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif -->
-
         @if (session('success'))
         <div class="mt-4 text-green-600">
             {{ session('success') }}

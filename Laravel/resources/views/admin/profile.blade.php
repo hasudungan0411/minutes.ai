@@ -18,12 +18,15 @@
                         alt="Foto Profil" class="w-48 h-48 rounded-full border border-gray-300">
                     <input type="file" name="fotoprofil" id="fotoprofil" class="hidden">
                     <label for="fotoprofil"
-                        class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 cursor-pointer">
-                        Ganti Foto
-                    </label>
-
-                    
-                </div>
+                    class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white text-sm opacity-0 group-hover:opacity-100 cursor-pointer">
+                    Ganti Foto
+                </label>
+                
+                
+                @error('fotoprofil')
+                <small class="text-red-600">{{ $message }}</small>
+                @enderror
+            </div>
             </div>
             <div class="mb-4">
                 <label for="name" class="block text-xl font-semibold">Nama</label>

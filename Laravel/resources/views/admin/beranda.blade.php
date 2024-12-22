@@ -27,7 +27,7 @@
             <div id="modalTambahUser" class="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center hidden z-50">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
                     <h2 class="text-lg font-bold mb-4">Tambah User</h2>
-                    <form action="{{ route('admin.user.store') }}" method="POST">
+                    <form action="{{ route('admin.tambahUser') }}" method="POST">
                         @csrf
                         <div class="mb-4">
                             <label for="name" class="block font-semibold mb-1">Nama</label>
@@ -38,7 +38,7 @@
                         </div>
                         <div class="mb-4">
                             <label for="email" class="block font-semibold mb-1">Email</label>
-                            <input type="email" id="email" name="email" class="w-full p-2 border border-gray-300 rounded-lg" value="{{ old('email') }}">
+                            <input type="text" id="email" name="email" class="w-full p-2 border border-gray-300 rounded-lg" value="{{ old('email') }}">
                             @error('email')
                                 <small class="text-red-600">{{ $message }}</small>
                             @enderror
@@ -50,24 +50,11 @@
                                 <small class="text-red-600">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="mb-4">
-                            <label for="password_confirmation" class="block font-semibold mb-1">Konfirmasi Password</label>
-                            <input type="password" id="password_confirmation" name="password_confirmation" class="w-full p-2 border border-gray-300 rounded-lg">
-                            @error('password_confirmation')
-                                <small class="text-red-600">{{ $message }}</small>
-                            @enderror
-                        </div>
                         <div class="flex justify-end space-x-4">
                             <button type="button" id="btnCloseModal" class="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-400">Batal</button>
                             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Simpan</button>
                         </div>
                     </form>
-
-                    @if (session('success'))
-                        <div class="mt-4 text-green-600">
-                            {{ session('success') }}
-                        </div>
-                    @endif
                 </div>
             </div>
 
@@ -90,16 +77,23 @@
                                 {{ $user->last_login ? \Carbon\Carbon::parse($user->last_login)->format('d M Y H:i') : 'Belum Login' }}
                             </td>
                             <td class="border border-gray-300 px-4 py-2">
-                                <form action="{{ route('admin.hapusUser', $user->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md">Hapus User</button>
-                                </form>
+                            <form action="{{ route('admin.hapusUser', $user->id) }}" method="POST" class="delete-form">
+                              @csrf
+                              @method('DELETE')
+                             <button type="button" class="delete-button bg-red-500 text-white px-3 py-1 rounded-md">
+                              Hapus User
+                             </button>
+                            </form>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+
+            <!-- pagination -->
+            <div class="mt-4">
+              {{ $users->onEachSide(2)->links() }}
+            </div>
 
             <!-- Total Users -->
             <div class="mt-4 text-right">
@@ -137,28 +131,39 @@
         });
     });
 
-    // SweetAlert for successful add and delete actions
-    @if (session('tambahUserSuccess'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{{ session('tambahUserSuccess') }}',
-            timer: 3000,
-            showConfirmButton: false
-        }).then(() => {
-            document.getElementById('modalTambahUser').classList.add('hidden'); // Close modal
-        });
-    @endif
-
-    @if (session('hapusUserSuccess'))
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '{{ session('hapusUserSuccess') }}',
-            timer: 3000,
-            showConfirmButton: false
-        });
-    @endif
+    
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Pilih semua tombol dengan class 'delete-button'
+        const deleteButtons = document.querySelectorAll('.delete-button');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Ambil form terdekat dari tombol yang diklik
+                const form = this.closest('form');
+
+                // Tampilkan SweetAlert
+                Swal.fire({
+                    title: 'Yakin ingin menghapus user ini?',
+                    text: "Aksi ini tidak dapat dibatalkan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit form jika pengguna menekan tombol 'Ya, Hapus!'
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 
 @endsection

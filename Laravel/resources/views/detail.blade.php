@@ -9,13 +9,6 @@
         ← Kembali ke Beranda
     </a>
 
-    <div class="col-span-2 mt-5 pl-8">
-        <!-- Audio Player -->
-        <audio id="audio-player" controls class="w-full">
-            <source src="{{ Storage::url($transcript->audio_url) }}" type="audio/wav">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
 
     <div class="grid grid-cols-1 px-10 bg-purple-100 rounded-lg">
         <div class="grid grid-cols-2 p-5">
@@ -80,10 +73,20 @@
                 </div>
             </div>
             <div class="col-span-2 mt-2">
-                <div class="pl-5">
-                    <p>
-                        {{ $transcript->summarization }}
-                    </p>
+                <div class="mb-4 pl-5">
+                @if($transcript->summarization && json_decode($transcript->summarization, true))
+                               @foreach (json_decode($transcript->summarization, true) as $diary)
+                                    <p>Prediksi: {{ $diary['prediction'] }}  <br> 
+                                    Hasil ringkasan: {{ $diary['summary'] }}</p>
+                                @endforeach
+                @else
+                <form action="{{ route('transcripts.summarize', $transcript->id) }}" method="POST">
+                  @csrf
+                  <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
+                   Buat Ringkasan
+                  </button>
+                </form>
+                @endif 
                 </div>
             </div>
         </div>

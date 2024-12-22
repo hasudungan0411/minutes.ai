@@ -26,6 +26,32 @@
         </script>
     @endif
 
+    @if (session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                Swal.fire({
+                    title: "{{ session('error') }}",
+                    icon: 'error',
+                    // confirmButtonText: 'OK'
+                    confirmButtonColor: "#3085d6",
+                });
+            });
+        </script>
+        @endif
+
+        @if ($errors->has('audio'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error',
+                text: "{{ $errors->first('audio') }}",
+                icon: 'error',
+                confirmButtonColor: "#3085d6",
+            });
+        });
+    </script>
+@endif
+
     <!-- Sidebar -->
     <div class="flex">
     <!-- Sidebar -->
