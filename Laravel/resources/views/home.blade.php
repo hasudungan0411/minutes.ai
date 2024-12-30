@@ -34,8 +34,7 @@
                     <p>Belum ada hasil transkripsi</p>
                 @else
                     @foreach ($transcripts as $transcript)
-                        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer"
-                            onclick="window.location='{{ route('detail', ['id' => $transcript->id]) }}'">
+                        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer" >
                             <div class="flex items-center space-x-4">
                                 <span>👥</span>
                                 <div>
@@ -74,11 +73,14 @@
     <div id="linkModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center hidden">
         <div class="bg-white p-9 rounded-lg w-3/4 md:w-3/4 lg:w-1/3 relative">
             <button id="closeLinkModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
-            <h3 class="text-lg font-bold mb-4">Tautkan Link</h3>
-            <input type="url" placeholder="Masukkan URL" class="w-full p-2 border border-gray-300 rounded-lg">
-            <div class="flex justify-end mt-4">
-                <button id="processLink" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Proses</button>
-            </div>
+            <h3 class="text-lg font-bold mb-4">Tautkan Link Drive</h3>
+            <form action="{{ route('process.link') }}" method="POST">
+                @csrf
+                <input type="url" id="Link" class="p-2 border border-gray-300 rounded-lg w-full" name="Link" placeholder="https://drive.google.com/..." required>
+                <div class="flex justify-end mt-4">
+                  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">proses</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -94,9 +96,6 @@
                 <button id="stopRecordingButton" class="bg-red-500 text-white px-4 py-2 rounded-lg hidden">Berhenti</button>
             </div>
             <audio id="audioPlayback" controls class="w-full hidden mt-9"></audio>
-            <div class="flex justify-end mt-5">
-                <button id="processRecordAudio" class="bg-blue-500 text-white px-4 py-2 rounded-lg hidden">Proses</button>
-            </div>
         </div>
     </div>
 

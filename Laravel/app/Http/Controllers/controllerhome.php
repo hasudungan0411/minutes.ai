@@ -92,6 +92,98 @@ class controllerhome extends Controller
         }
     }
 
+    public function processLink(Request $request)
+{
+    // Validasi input Link untuk memastikan itu adalah URL yang valid
+    $request->validate([
+        'Link' => 'required|url|regex:/^https:\/\/drive\.google\.com\/.*$/',  // Validasi bahwa input adalah URL Google Drive
+    ]);
+
+    $audioUrl = $request->input('Link');  // Ambil URL audio
+
+    try {
+        // Cek apakah URL adalah URL Google Drive
+        if (strpos($audioUrl, 'drive.google.com') !== false) {
+            // Ubah URL Google Drive menjadi URL download langsung
+            $driveUrl = $this->getDriveDownloadUrl($audioUrl);
+
+            // Mendownload file audio dari URL ke server
+            $response = Http::get($driveUrl);
+
+            set_time_limit(300);
+
+            // Periksa jika response berhasil dan data tersedia
+            if ($response->successful()) {
+                // Sanitasi nama file agar tidak mengandung karakter tidak valid
+                $audioFileName = basename(parse_url($driveUrl, PHP_URL_PATH));
+                $audioFileName = preg_replace('/[^a-zA-Z0-9\-\_\.]/', '_', $audioFileName); // Ganti karakter tidak valid dengan '_'
+
+                // Simpan file audio sementara di server (folder public/temp)
+                $tempPath = public_path('temp/' . $audioFileName);
+
+                // Pastikan folder temp ada, buat folder jika belum ada
+                if (!file_exists(public_path('temp'))) {
+                    mkdir(public_path('temp'), 0777, true);
+                }
+
+                // Menyimpan konten file audio ke dalam folder public/temp
+                file_put_contents($tempPath, $response->body());
+
+                // Kirim file audio ke Flask menggunakan multipart/form-data
+                $flaskResponse = Http::timeout(300)  // Timeout dalam detik, misalnya 60 detik
+                 ->attach('audio', file_get_contents($tempPath), $audioFileName)
+                 ->post('http://localhost:9999/process-audio', [
+                    'audio_name' => $audioFileName,
+                ]);
+
+                // Hapus file audio sementara setelah dikirim
+                unlink($tempPath);
+
+                if ($flaskResponse->successful()) {
+                    // Ambil data transkripsi, diarization, dan audio_name dari respons Flask
+                    $generalTranscription = $flaskResponse->json('general_transcription');
+                    $diarizationResults = $flaskResponse->json('diarization_results');
+                    $audioName = basename($audioFileName);
+
+                    // Simpan hasil transkripsi ke database
+                    Transcripts::create([
+                        'audio_name' => $audioName,
+                        'speech_to_text' => $generalTranscription,
+                        'diarization' => json_encode($diarizationResults),
+                        'user_id' => auth()->id(), // Menyimpan ID pengguna yang sedang login
+                    ]);
+
+                    return redirect()->back()->with('success', 'File berhasil ditranskripsi!');
+                } else {
+                    return redirect()->back()->with('error', 'Gagal memproses audio: ' . $flaskResponse->json('error'));
+                }
+            } else {
+                return redirect()->back()->with('error', 'Gagal mendownload file audio');
+            }
+        } else {
+            return redirect()->back()->with('error', 'URL bukan Google Drive');
+        }
+    } catch (\Exception $e) {
+        return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
+
+// Di dalam controller yang relevan
+private function getDriveDownloadUrl($audioUrl)
+{
+    // Ekstrak file ID dari URL Google Drive
+    preg_match('/\/d\/(.*?)(?=\/|$)/', $audioUrl, $matches);
+
+    if (isset($matches[1])) {
+        $fileId = $matches[1];
+        // Mengubah URL menjadi format download langsung
+        return "https://drive.google.com/uc?export=download&id=$fileId";
+    }
+
+    throw new \Exception('URL Google Drive tidak valid');
+}
+
+
     public function caraPenggunaan()
     {
         return view('caraPenggunaan');

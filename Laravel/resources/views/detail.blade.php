@@ -110,16 +110,19 @@
                     </div>
                 </div>
                 <!-- Body -->
-                <div class="my-5">
-                    <input type="text" class="border-2 border-black w-full rounded-full h-12 px-5">
-                </div>
-                <!-- Footer -->
-                <div class="flex justify-end pt-2">
-                    <button
-                        class="focus:outline-none modal-close px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-300">Batal</button>
-                    <button
-                        class="focus:outline-none px-4 bg-blue-400 p-3 ml-3 rounded-lg text-white hover:bg-teal-400">Kirim</button>
-                </div>
+                <form method="POST" action="{{ route('share.email', ['id' => $transcript->id]) }}">
+                @csrf
+                    <div class="my-5">
+                        <input type="email" name="email" id="email"  label="email" class="border-2 border-black w-full rounded-full h-12 px-5">
+                    </div>
+                    <!-- Footer -->
+                    <div class="flex justify-end pt-2">
+                        <button
+                            class="focus:outline-none modal-close px-4 bg-gray-400 p-3 rounded-lg text-white hover:bg-gray-300">Batal</button>
+                        <button
+                            class="focus:outline-none px-4 bg-blue-400 p-3 ml-3 rounded-lg text-white hover:bg-teal-400">Kirim</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

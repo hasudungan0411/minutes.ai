@@ -52,6 +52,19 @@
     </script>
 @endif
 
+@if ($errors->has('Link'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                title: 'Error',
+                text: "{{ $errors->first('audio') }}",
+                icon: 'error',
+                confirmButtonColor: "#3085d6",
+            });
+        });
+    </script>
+@endif
+
     <!-- Sidebar -->
     <div class="flex">
     <!-- Sidebar -->

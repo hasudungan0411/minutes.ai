@@ -8,6 +8,7 @@ use App\Http\Controllers\audiocontroller;
 use App\Http\Controllers\halamancontroller;
 use App\Http\Controllers\profilecontroller;
 use App\Http\Controllers\DownloadSummaryController;
+use App\Http\Controllers\TranscriptController;
 
 // Routes for users
 Route::middleware(['auth', 'role:user'])->group(function () {
@@ -15,6 +16,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('Cara-penggunaan', [controllerhome::class, 'caraPenggunaan'])->name('cara.penggunaan');
     Route::get('detail/{id}', [controllerhome::class, 'detail'])->name('detail');
     Route::get('edit/{id}', [controllerhome::class, 'edit'])->name('edit');
+
+    
+    Route::post('/share/email/{id}', [TranscriptController::class, 'shareEmail'])->name('share.email');
+
 });
 
 // General routes
@@ -54,6 +59,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 // Audio upload and processing routes
 Route::post('/upload-audio', [audiocontroller::class, 'upload'])->name('upload.audio');
 Route::post('/process-audio', [controllerhome::class, 'processAudio'])->name('process.audio');
+Route::post('/process-link', [controllerhome::class, 'processLink'])->name('process.link');
 Route::post('/process-recorded-audio', [controllerhome::class, 'processRecordedAudio']);
 
 //Transcripts download and summary
