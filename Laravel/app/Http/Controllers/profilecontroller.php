@@ -59,7 +59,6 @@ class profilecontroller extends Controller // Perbaiki nama kelas
         // Gunakan save() untuk menyimpan semua perubahan, termasuk fotoprofil
         $user->save();
 
-        Alert::success('success', 'Profile berhasil diupdate');
-        return redirect('/profile');
+        return redirect('/profile')->with('success', 'Profile berhasil diupdate!');
     }
 }

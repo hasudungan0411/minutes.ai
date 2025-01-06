@@ -14,7 +14,7 @@
         <div class="grid grid-cols-2 p-5">
             <div class="col-span-1">
                 <div class="font-bold text-lg pl-5">
-                    {{ $transcript->audio_name }} <br>
+                    <strong>{{ $transcript->title }}</strong> <br>
                 </div>
                 <div class="pl-5">
                     <small>{{ $transcript->created_at->diffForHumans() }} </small>
@@ -80,7 +80,7 @@
                                     Hasil ringkasan: {{ $diary['summary'] }}</p>
                                 @endforeach
                 @else
-                <form action="{{ route('transcripts.summarize', $transcript->id) }}" method="POST">
+                <form action="{{ route('transcripts.summarize', $transcript->id) }}" method="POST" id="summaryForm">
                   @csrf
                   <button type="submit" class="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
                    Buat Ringkasan
@@ -89,6 +89,13 @@
                 @endif 
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="loadingScreen" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center hidden z-50">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+            <p class="text-white text-lg mt-4">Sedang memproses...</p>
         </div>
     </div>
 
@@ -181,3 +188,29 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const linkForm = document.getElementById('summaryForm');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const modal = document.getElementById('fileAudioModal');
+        const closeButtons = [document.getElementById('closeFileAudioModal'), document.getElementById('closeModalButton')];
+
+        // Saat form di-submit, tampilkan loading screen
+        summaryForm?.addEventListener('submit', function () {
+            loadingScreen.classList.remove('hidden');
+        });
+
+        // Menutup modal jika tombol "Cancel" atau "×" diklik
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                modal.classList.add('hidden');
+            });
+        });
+
+        // Menampilkan modal untuk debugging
+        document.getElementById('openModalButton')?.addEventListener('click', function () {
+            modal.classList.remove('hidden');
+        });
+    });
+    </script>

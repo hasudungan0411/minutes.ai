@@ -38,7 +38,7 @@
                             <div class="flex items-center space-x-4">
                                 <span>👥</span>
                                 <div>
-                                    <strong>Nama File Audio:</strong> {{ $transcript->audio_name }} <br>
+                                    <strong>{{ $transcript->title }}</strong> <br>
                                     <small>{{ $transcript->created_at->diffForHumans() }}</small> <br>
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
     <div id="fileAudioModal" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center hidden">
         <div class="bg-white p-9 rounded-lg w-9/ md:w-1/5 lg:w-1/3 relative">
             <button id="closeFileAudioModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
-            <h3 class="text-lg font-bold mb-4">Pilih File Audio</h3>
+            <h3 class="text-lg font-bold mb-4">Pilih File Audio dengan format WAV</h3>
             <form action="{{ route('process.audio') }}" method="POST" enctype="multipart/form-data" id="fileUploadForm" class="space-y-4">
                 @csrf
                 <input type="file" name="audio" id="audio" class="p-2 border border-gray-300 rounded-lg w-full" accept="audio/*">
@@ -74,13 +74,21 @@
         <div class="bg-white p-9 rounded-lg w-3/4 md:w-3/4 lg:w-1/3 relative">
             <button id="closeLinkModal" class="absolute top-2 right-2 text-gray-600 text-xl">&times;</button>
             <h3 class="text-lg font-bold mb-4">Tautkan Link Drive</h3>
-            <form action="{{ route('process.link') }}" method="POST">
+            <form action="{{ route('process.link') }}" method="POST" id="linkForm">
                 @csrf
                 <input type="url" id="Link" class="p-2 border border-gray-300 rounded-lg w-full" name="Link" placeholder="https://drive.google.com/..." required>
                 <div class="flex justify-end mt-4">
                   <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">proses</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-gray-800 bg-opacity-70 flex justify-center items-center hidden z-50">
+        <div class="flex flex-col items-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+            <p class="text-white text-lg mt-4">Sedang memproses...</p>
         </div>
     </div>
 
@@ -108,5 +116,35 @@
     <script src="{{ asset('js/transciption.js') }}"></script>
     <script src="{{ asset('js/recording.js') }}"></script>
     <script src="{{ asset('js/fileaudio.js') }}"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileUploadForm = document.getElementById('fileUploadForm');
+        const linkForm = document.getElementById('linkForm');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const modal = document.getElementById('fileAudioModal');
+        const closeButtons = [document.getElementById('closeFileAudioModal'), document.getElementById('closeModalButton')];
+
+        // Saat form di-submit, tampilkan loading screen
+        fileUploadForm.addEventListener('submit', function () {
+            loadingScreen.classList.remove('hidden');
+        });
+        linkForm?.addEventListener('submit', function () {
+            loadingScreen.classList.remove('hidden');
+        });
+
+        // Menutup modal jika tombol "Cancel" atau "×" diklik
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                modal.classList.add('hidden');
+            });
+        });
+
+        // Menampilkan modal untuk debugging
+        document.getElementById('openModalButton')?.addEventListener('click', function () {
+            modal.classList.remove('hidden');
+        });
+    });
+    </script>
+
 
 @endsection

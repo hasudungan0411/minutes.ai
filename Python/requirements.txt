@@ -1,0 +1,8 @@
+pip install flask
+pip install librosa
+pip install torch
+pip install pyannote.audio
+pip install transformers
+pip install openai-whisper
+pip install nltk
+pip install pytube

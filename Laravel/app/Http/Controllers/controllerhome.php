@@ -13,23 +13,28 @@ use Illuminate\Support\Facades\Storage;
 class controllerhome extends Controller
 {
     public function home()
-    {
-        Carbon::setLocale('id');
+{
+    Carbon::setLocale('id');
 
-        if (Auth::check()) {
-            $role = Auth::user()->role;
+    if (Auth::check()) {
+        $role = Auth::user()->role;
 
-            if ($role === 'user') {
-                $user = Auth::user();
-                $transcripts = Transcripts::where('user_id', $user->id)->get();
-                return view('home', compact('user', 'transcripts'));
-            } elseif ($role === 'admin') {
-                return view('admin.beranda');
-            }
+        if ($role === 'user') {
+            $user = Auth::user();
+            
+            // Urutkan data transcripts berdasarkan waktu terbaru
+            $transcripts = Transcripts::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc') // Menambahkan sorting
+                ->get();
+            
+            return view('home', compact('user', 'transcripts'));
+        } elseif ($role === 'admin') {
+            return view('admin.beranda');
         }
-
-        return redirect('/login');
     }
+
+    return redirect('/login');
+}
 
     public function processAudio(Request $request)
     {
@@ -209,6 +214,7 @@ private function getDriveDownloadUrl($audioUrl)
 
     // Ambil input dari textarea
     $input = $request->input('summarization');
+    $diarizationInput = $request->input('diarization');
 
     // Pisahkan data menjadi array per baris
     $lines = array_filter(explode("\n", $input), 'trim'); // Hapus baris kosong
@@ -224,18 +230,34 @@ private function getDriveDownloadUrl($audioUrl)
         }
     }
 
+    // Parsing diarization
+    $diarizationLines = array_filter(explode("\n", $diarizationInput), 'trim'); // Hapus baris kosong
+    $diarization = [];
+    for ($i = 0; $i < count($diarizationLines); $i += 2) {
+        if (isset($diarizationLines[$i]) && isset($diarizationLines[$i + 1])) {
+            $diarization[] = [
+                'speaker' => trim($diarizationLines[$i]),     
+                'start_time' => trim($diarizationLines[$i + 1]),
+                'text' => trim($diarizationLines[$i + 2])      
+            ];
+        }
+    }
+
     // Konversi ke JSON
     $summarizationJson = json_encode($summarization);
+    $diarizationJson = json_encode($diarization);
+
 
     // Simpan ke database
+    $transcript->title = $request->input('title');
     $transcript->summarization = $summarizationJson;
+    $transcript->diarization = $diarizationJson;
+    $transcript->speech_to_text = $request->input('speech_to_text');
     $transcript->save();
 
     // Redirect dengan pesan sukses
     return redirect()->route('detail', $id)->with('success', 'Ringkasan berhasil diperbarui.');
 }
-
-    
 
 public function summarize(Request $request, $id)
 {

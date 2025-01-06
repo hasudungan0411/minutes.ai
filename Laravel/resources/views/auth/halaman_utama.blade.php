@@ -36,35 +36,31 @@
         <section class="max-w-4xl mx-auto p-4">
             <h3 class="text-3xl font-semibold mb-4">Tentang Notulain</h3>
             <p class="text-gray-600 mb-4">Notulain adalah aplikasi yang dirancang untuk menyederhanakan dan meningkatkan produktivitas dalam pertemuan. Dengan fitur canggih seperti transkripsi otomatis, pengenalan pembicara (diarization), dan ringkasan, pengguna dapat dengan mudah merekam dan mengelola catatan rapat tanpa kesulitan.</p>
-            <p class="text-gray-600 mb-4">Kami memahami bahwa waktu adalah uang. Dengan Minutes.ai, Anda tidak perlu lagi mencatat setiap detail secara manual. Aplikasi ini secara otomatis mengonversi audio rapat menjadi teks, memungkinkan Anda untuk fokus pada diskusi yang berlangsung. Selain itu, ringkasan yang dihasilkan membantu Anda meninjau poin-poin penting dengan cepat.</p>
-            <p class="text-gray-600 mb-4">Baik untuk rapat tim kecil maupun konferensi besar, Minutes.ai memberikan pengalaman yang mulus dan efisien. Bergabunglah dengan kami dan ubah cara Anda melakukan pertemuan hari ini!</p>
+            <p class="text-gray-600 mb-4">Kami memahami bahwa waktu adalah uang. Dengan Notulain, Anda tidak perlu lagi mencatat setiap detail secara manual. Aplikasi ini secara otomatis mengonversi audio rapat menjadi teks, memungkinkan Anda untuk fokus pada diskusi yang berlangsung. Selain itu, ringkasan yang dihasilkan membantu Anda meninjau poin-poin penting dengan cepat.</p>
+            <p class="text-gray-600 mb-4">Baik untuk rapat tim kecil maupun konferensi besar, Notulain memberikan pengalaman yang mulus dan efisien. Bergabunglah dengan kami dan ubah cara Anda melakukan pertemuan hari ini!</p>
         </section>
 
         <!-- Deskripsi Fitur -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8 max-w-4xl mx-auto">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold mb-2">Fitur Transkripsi</h3>
-                <p class="text-gray-600">Transkripsi otomatis yang akurat untuk merekam setiap percakapan selama rapat.</p>
+                <p class="text-gray-600">Transkripsi otomatis untuk merekam setiap percakapan selama rapat.</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold mb-2">Diarization</h3>
-                <p class="text-gray-600">Mampu mengenali dan mencatat siapa yang berbicara, sehingga catatan lebih terorganisir.</p>
+                <p class="text-gray-600">Mampu mengenali dan mencatat ada berapa pembicara, sehingga catatan lebih terorganisir.</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold mb-2">Ringkasan</h3>
                 <p class="text-gray-600">Dapatkan ringkasan dari setiap rapat untuk review yang cepat dan mudah.</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-2">Kolaborasi Tim</h3>
+                <h3 class="text-xl font-semibold mb-2">Kemudahan berbagi</h3>
                 <p class="text-gray-600">Fasilitasi kerja sama yang lebih baik dengan berbagi catatan dan ringkasan dengan tim Anda.</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold mb-2">Keamanan Data</h3>
                 <p class="text-gray-600">Kami memastikan bahwa semua data Anda aman dan terlindungi dengan enkripsi yang kuat.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-2">Dukungan Multibahasa</h3>
-                <p class="text-gray-600">Dapatkan dukungan untuk berbagai bahasa untuk memenuhi kebutuhan pengguna internasional.</p>
             </div>
         </div>
     </main>
@@ -73,10 +69,10 @@
     <footer class="bg-purple-600 text-white p-4 mt-16">
         <div class="container mx-auto text-center">
             <h4 class="text-lg font-bold mb-2">Kontak Kami</h4>
-            <p>Email: support@minutes.ai</p>
+            <p>Email: support@notulain</p>
             <p>Telepon: (021) 123-4567</p>
             <p>Alamat: Jl. Contoh No. 123, Jakarta, Indonesia</p>
-            <p class="mt-4">&copy; 2024 Minutes.ai. All rights reserved.</p>
+            <p class="mt-4">&copy; 2024 Nootulain. All rights reserved.</p>
         </div>
     </footer>
 

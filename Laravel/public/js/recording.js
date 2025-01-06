@@ -104,6 +104,52 @@ function startFrequencyVisualization(stream) {
 
 let stream;
 
+function encodeWAV(samples, sampleRate) {
+    // inisialisasi variabel
+    const numChannels = 1; // Mono
+    const byteRate = sampleRate * numChannels * 2; // byte per detik
+    const blockAlign = numChannels * 2; // ukuran data nya
+
+    //membuat buffer untuk wav
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    // header RIFF 
+    writeString(view, 0, "RIFF");
+    view.setUint32(4, 36 + samples.length * 2, true); // ukuran file wav
+    writeString(view, 8, "WAVE");
+
+    // deskripsi audio
+    writeString(view, 12, "fmt ");
+    view.setUint32(16, 16, true); // ukuran Subchunk 
+    view.setUint16(20, 1, true); // Audio format 
+    view.setUint16(22, numChannels, true); // jumlah saluran
+    view.setUint32(24, sampleRate, true); // Sample frekuensi
+    view.setUint32(28, byteRate, true); // Byte per detik
+    view.setUint16(32, blockAlign, true); // ukuran blok data
+    view.setUint16(34, 16, true); // Bits per sample 
+
+    // data Subchunk
+    writeString(view, 36, "data");
+    view.setUint32(40, samples.length * 2, true); // ukuran data audio
+    floatTo16BitPCM(view, 44, samples); // menulis data audio
+
+    return new Blob([buffer], { type: "audio/wav" });
+}
+
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+    }
+}
+
+function floatTo16BitPCM(view, offset, input) {
+    for (let i = 0; i < input.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, input[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    }
+}
+
 // Event listener mulai rekaman
 document
     .getElementById("startRecordingButton")
@@ -121,14 +167,32 @@ document
             audioChunks.push(event.data);
         };
 
-        mediaRecorder.onstop = function () {
-            const audioBlob = new Blob(audioChunks, {
-                type: "audio/wav",
-            });
-            const audioUrl = URL.createObjectURL(audioBlob);
+        mediaRecorder.onstop = async function () {
+            // Dapatkan data audio dalam format Float32Array
+            const audioContext = new AudioContext();
+            const audioBuffer = await audioContext.decodeAudioData(
+                await new Blob(audioChunks).arrayBuffer()
+            );
+            const rawData = audioBuffer.getChannelData(0); // Ambil data channel pertama
+            const sampleRate = audioBuffer.sampleRate;
+        
+            // Konversi ke WAV
+            const wavBlob = encodeWAV(rawData, sampleRate);
+        
+            // Buat URL untuk audio
+            const audioUrl = URL.createObjectURL(wavBlob);
+        
+            // Audio diputar
             const audio = document.getElementById("audioPlayback");
             audio.src = audioUrl;
             audio.classList.remove("hidden");
+        
+            // Tombol download
+            const downloadButton = document.getElementById("downloadAudioButton");
+            downloadButton.classList.remove("hidden");
+            downloadButton.href = audioUrl;
+            downloadButton.download = "audio.wav"; // Nama file saat diunduh
+
             document
                 .getElementById("processRecordAudio")
                 .classList.remove("hidden");
@@ -165,7 +229,7 @@ document
                 "Resume";
             isPaused = true;
         } else {
-            mediaRecorder.resume();
+            mediaRecorder.resume(); 
             animationId = requestAnimationFrame(function () {
                 startFrequencyVisualization(stream); // lanjutkan visualisasi setelah resume
             });
@@ -191,71 +255,6 @@ document
         document.getElementById("stopRecordingButton").classList.add("hidden");
         document.getElementById("pauseRecordingButton").textContent = "Pause";
     });
-
-// Process Audio Button
-document
-    .getElementById("processRecordAudio")
-    .addEventListener("click", async function () {
-        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-        const audioName = generateRandomAudioName(); // Buat nama acak
-
-        const formData = new FormData();
-        formData.append("audio", audioBlob, audioName); // Lampirkan file audio
-
-        try {
-            const response = await fetch("/process-recorded-audio", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to process audio");
-            }
-
-            const result = await response.json();
-            alert("Transkripsi berhasil diproses!");
-
-            // Tambahkan hasil baru ke list catatan
-            appendNewNote({
-                audio_name: result.transcript.audio_name,
-                detail_url: result.transcript.detail_url,
-            });
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Gagal memproses audio. Silakan coba lagi.");
-        }
-    });
-
-// Fungsi untuk membuat nama acak
-function generateRandomAudioName() {
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 10);
-    return `audio_${timestamp}_${randomString}.wav`;
-}
-
-// Fungsi untuk menambahkan hasil ke list catatan
-function appendNewNote({ audio_name, detail_url }) {
-    const notesContainer = document.getElementById("notes-container");
-    const noteHTML = `
-        <div class="flex justify-between items-center p-4 bg-purple-100 rounded-lg cursor-pointer hover:bg-blue-200"
-            onclick="window.location='${detail_url}'">
-            <div class="flex items-center space-x-4">
-                <span>👥</span>
-                <div>
-                    <strong>Nama File Audio:</strong> ${audio_name} <br>
-                    <small>Baru saja</small> <br>
-                </div>
-            </div>
-            <a href="${detail_url}" class="p-2">⋮</a>
-        </div>
-    `;
-    notesContainer.insertAdjacentHTML("afterbegin", noteHTML);
-}
 
 // tutup modal dan reset rekaman
 function closeModal(modalId) {
